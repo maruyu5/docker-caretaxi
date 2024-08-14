@@ -1,0 +1,36 @@
+{% extends 'base1.html' %}
+
+{% block title %}詳細 | 介護・福祉タクシーネットワーク{% endblock %}
+
+{% block active_registration %}active{% endblock %}
+
+{% block contents %}
+    <div class="container">
+        <div class="my-div-style">
+
+        <h1 class="display-5">
+            <a href="{% url 'caretaxi:registration_list' %}">介護・福祉タクシーネットワーク</a> 詳細
+        </h1>
+
+        <div>
+            {% if registration.main_image %}
+            <p><img src="{{ registration.main_image.url }}" alt="Design Image" style="max-width: 800px; max-height: 800px;"></p>
+            {% else %}
+            {% endif %}
+
+            <p><strong>事業所名:</strong> {{ registration.business_name }}</p>
+            <p><strong>特徴:</strong> {{ registration.features }}</p>
+            <p><strong>所在地:</strong> {{ registration.location }}</p>
+            <p><strong>電話番号:</strong> {{ registration.tel }}</p>
+            <p><strong>主なサービス:</strong> {{ registration.genres }}</p>
+            <p><strong>車種:</strong> {{ registration.carmodel }}</p>
+            <p><strong>メールアドレス:</strong> {{ registration.email }}</p>
+            <p><strong>Webサイト:</strong> {{ registration.siteurl|safe }}</p>
+            <p><strong>備考:</strong> {{ registration.message }}</p>
+
+            <p><a href="{% url 'caretaxi:registration_list' %}">一覧に戻る</a></p>
+        </div>
+
+        </div>
+    </div>
+{% endblock %}

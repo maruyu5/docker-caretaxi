@@ -1,0 +1,20 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=django
+    volumes:
+      - ./venv_caretaxi/caretaxi:/usr/src/venv_caretaxi
+  venv_caretaxi:
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:7000
+    ports:
+      - "7000:7000"
+    container_name: venv_caretaxi
+    volumes:
+      - ./venv_caretaxi/caretaxi:/usr/src/venv_caretaxi
+    depends_on:
+      - db

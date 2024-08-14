@@ -1,0 +1,29 @@
+from django.urls import path
+from . import views
+# from .views import email_form
+from .views import registration_list
+
+from django.conf import settings
+from django.conf.urls.static import static
+from .views import EditRegistrationView
+from .views import DetailRegistrationView
+
+app_name = 'caretaxi'
+urlpatterns = [
+    path('diary/', views.DiaryView.as_view(), name="diary"),
+    path('hello/', views.HelloView.as_view(), name="hello"),
+    path('tashizan/', views.TashizanView.as_view(), name="tashizan"),
+    path('kajiki/', views.KajikiView.as_view(), name="kajiki"),
+    path('tenki/', views.TenkiView.as_view(), name="tenki"),
+    path('tashizan_form/', views.TashizanFormView, name="tashizan_form"),
+    path('registration/', views.RegistrationView.as_view(), name="registration"),
+    path('registration_list/', registration_list, name='registration_list'),
+    path('edit_registration/<int:registration_id>/', EditRegistrationView.as_view(), name='edit_registration'),
+    path('detail_registration/<int:registration_id>/', DetailRegistrationView.as_view(), name='detail_registration'),
+    # path('email/', views.email_form, name='email_form'),
+]
+
+# 開発環境でのみメディアファイルを提供する設定を追加
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    

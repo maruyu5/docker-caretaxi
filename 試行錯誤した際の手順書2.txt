@@ -1,0 +1,29 @@
+参考URL
+https://ryosuke.world/programming/python/how-to-create-a-web-application-using-django-x-docker/
+
+
+2_docker-design_search_app2（Djangoのロケット画面が上手くいった時のバックアップ）
+に対して「venv_design_search」フォルダを、
+実際のデザインサーチシステムの「venv_design_search」フォルダに置き換えたもの。
+「docker-compose.yml」の階層が違ったので、
+
+
+    volumes:
+      - ./venv_design_search/design_search:/usr/src/venv_design_search
+
+
+に書き換えた上で、
+【docker-compose up】を実行する。
+
+
+ブラウザで【http://localhost:7000】にアクセスする。
+http://localhost:7000/inquiry_list/
+に作ったWebアプリがある。
+
+
+
+
+
+これらが完了してから、次の工程、さくらのVPS（本番環境）もデプロイする流れとなる。
+さくらのVPSへのデプロイの参考記事は以下が役に立った。
+https://vps-one.site/docker-sakura-vps/
