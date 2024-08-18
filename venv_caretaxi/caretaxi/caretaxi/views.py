@@ -14,10 +14,7 @@ from .forms import RegistrationForm
 from django.shortcuts import get_object_or_404, render
 from django.views import View
 
-
-
 logger = logging.getLogger(__name__)
-
 
 def index(request):
     if request.method == 'POST':
@@ -30,6 +27,7 @@ def index(request):
         form = RegistrationForm()
 
     return render(request, 'index.html', {'form': form})
+
 
 
 
@@ -127,6 +125,9 @@ class KajikiView(generic.TemplateView):
         context['kajiki4'] = result_divtext_str
         return context
 
+
+
+
 class TenkiView(generic.ListView):
     model = Post
     template_name = "tenki.html"
@@ -200,6 +201,9 @@ class TenkiView(generic.ListView):
 
         return context
 
+
+
+
 def TashizanFormView(request):
     template_name="tashizan_form.html"
     context = {}  # コンテキスト辞書を初期化
@@ -235,6 +239,7 @@ class RegistrationView(generic.FormView):
 
 
 
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.shortcuts import render
@@ -243,7 +248,7 @@ from .models import Registration
 
 def registration_list(request):
     items_per_page = 10
-    inquiries = Registration.objects.all().order_by('-id')
+    registrations = Registration.objects.all().order_by('-id')
 
     search_column = request.GET.get('search_column', 'all')
     search_text = request.GET.get('search_text', '')
@@ -253,46 +258,41 @@ def registration_list(request):
     # 選択された項目と検索テキストに基づいて結果をフィルタリング
     if search_text:
         if search_column == 'all':
-            inquiries = inquiries.filter(
+            registrations = registrations.filter(
+                Q(business_name__icontains=search_text) |
+                Q(features__icontains=search_text) |
+                Q(postal_code__icontains=search_text) |
                 Q(location__icontains=search_text) |
                 Q(tel__icontains=search_text) |
                 Q(carmodel__icontains=search_text) |
-                Q(possibility__icontains=search_text) |
-                Q(reuse__icontains=search_text) |
                 Q(email__icontains=search_text) |
                 Q(siteurl__icontains=search_text) |
                 Q(message__icontains=search_text)
             )
         else:
-            inquiries = inquiries.filter(**{f'{search_column}__icontains': search_text})
+            registrations = registrations.filter(**{f'{search_column}__icontains': search_text})
 
     # デザインの種類に基づいて結果をフィルタリング（新しく追加）
     if search_genres:
-        inquiries = inquiries.filter(genres__icontains=search_genres)
+        registrations = registrations.filter(genres__icontains=search_genres)
 
-
-
-
-
-    paginator = Paginator(inquiries, items_per_page)
+    paginator = Paginator(registrations, items_per_page)
 
     page = request.GET.get('page', 1)
 
     try:
-        inquiries = paginator.page(page)
+        registrations = paginator.page(page)
     except PageNotAnInteger:
-        inquiries = paginator.page(1)
+        registrations = paginator.page(1)
     except EmptyPage:
-        inquiries = paginator.page(paginator.num_pages)
+        registrations = paginator.page(paginator.num_pages)
 
     return render(request, 'registration_list.html', {
-        'inquiries': inquiries,
+        'registrations': registrations,
         'search_column': search_column,
         'search_text': search_text,
         'search_genres': search_genres,  # 追加
     })
-
-
 
 
 
@@ -305,16 +305,12 @@ class EditRegistrationView(View):
         registration = get_object_or_404(Registration, id=registration_id)
         form = RegistrationForm(instance=registration)
 
-
-
         # genres_initial のデータ型が文字列 (<class 'str'>) であることが確認できたので、この文字列をリストに変換する必要がある。ここがてこずった場所。
         genres_initial = form.initial['genres']
         genres_list = eval(genres_initial) if genres_initial else [] # genres_list のデータ型が正しくリスト (<class 'list'>) に変換された。これでチェックボックスにチェックが入った状態で編集画面が表示されるようになった。
 
         # genresのchoicesを指定
         form.fields['genres'].widget.choices = form.fields['genres'].choices
-
-
 
         # フォームに初期値を手動でセット
         form.initial['genres'] = genres_list
@@ -337,7 +333,6 @@ class EditRegistrationView(View):
 
 
 
-
 # 詳細画面
 class DetailRegistrationView(View):
     template_name = 'detail_registration.html'
@@ -346,6 +341,23 @@ class DetailRegistrationView(View):
         registration = get_object_or_404(Registration, id=registration_id)
         return render(request, self.template_name, {'registration': registration})
 
+
+
+
+# 市町村別にフィルタリングする関数
+def filter_by_city(request, prefecture, city):
+    query = f"{prefecture}{city}"
+    registrations = Registration.objects.filter(location__startswith=query)
+
+    paginator = Paginator(registrations, 10) # 1ページに表示する件数を設定
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'city_filter_results.html', {
+        'page_obj': page_obj, 
+        'prefecture': prefecture, 
+        'city': city
+    })
 
 
 
@@ -364,4 +376,3 @@ class DetailRegistrationView(View):
 #         form = EmailForm()
 
 #     return render(request, 'email_form.html', {'form': form})
-

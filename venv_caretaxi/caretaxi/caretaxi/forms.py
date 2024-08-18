@@ -5,11 +5,8 @@ from .models import Registration
 import re
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-
-
-
-
-
+from django.core.validators import RegexValidator
+from django.utils.safestring import mark_safe
 
 class RegistrationForm(forms.ModelForm):
     GENRE_CHOICES = [
@@ -21,21 +18,71 @@ class RegistrationForm(forms.ModelForm):
         ('女性介助', '女性介助'),
     ]
 
+    postal_code = forms.CharField(
+        label=mark_safe('郵便番号 <span class="text-danger">*必須</span>'),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '例: 123-4567'}),
+    )
+
+    def clean_postal_code(self):
+        postal_code = self.cleaned_data.get('postal_code')
+        # ハイフンなしの7桁の場合、自動でハイフンを挿入
+        if len(postal_code) == 7 and postal_code.isdigit():
+            postal_code = f'{postal_code[:3]}-{postal_code[3:]}'
+        
+        # フォーマット後に正しい形式か確認
+        if not re.match(r'^\d{3}-\d{4}$', postal_code):
+            raise ValidationError('正しい郵便番号の形式で入力してください。')
+        
+        return postal_code
+
     genres = forms.MultipleChoiceField(
         label='主なサービス',
         choices=GENRE_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         required=False
     )
-    business_name = forms.CharField(label='事業所名',)
-    features = forms.CharField(label='特徴',)
-    location = forms.CharField(label='所在地',)
-    tel = forms.CharField(label='電話番号', max_length=16, required=False)
-    carmodel = forms.CharField(label='車種')
-    email = forms.EmailField(label='メールアドレス', required=False)
-    siteurl = forms.CharField(label='Webサイト')
-    message = forms.CharField(label='備考', widget=forms.Textarea, required=False)
-    main_image = forms.ImageField(label='画像を設定する', required=False)
+    business_name = forms.CharField(
+        label=mark_safe('事業所名 <span class="text-danger">*必須</span>'),
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    features = forms.CharField(
+        label='特徴',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    location = forms.CharField(
+        label=mark_safe('所在地 <span class="text-danger">*必須</span>'),
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    tel = forms.CharField(
+        label=mark_safe('電話番号 <span class="text-danger">*必須</span>'),
+        max_length=16,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    carmodel = forms.CharField(
+        label='車種',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        label=mark_safe('メールアドレス <span class="text-danger">*必須</span>'),
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    siteurl = forms.CharField(
+        label='Webサイト',
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control'})
+    )
+    message = forms.CharField(
+        label='備考',
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control'})
+    )
+    main_image = forms.ImageField(
+        label='画像を設定する',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
 
     class Meta:
         model = Registration
@@ -44,25 +91,12 @@ class RegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['business_name'].widget.attrs['class'] = 'form-control'
-        self.fields['business_name'].widget.attrs['placeholder'] = '事業所名を入力してください。'
-        self.fields['features'].widget.attrs['class'] = 'form-control'
-        self.fields['features'].widget.attrs['placeholder'] = '特徴を入力してください。'
-        self.fields['location'].widget.attrs['class'] = 'form-control'
-        self.fields['location'].widget.attrs['placeholder'] = '所在地を入力してください。'
-        self.fields['tel'].widget.attrs['class'] = 'form-control'
-        self.fields['tel'].widget.attrs['placeholder'] = '電話番号を入力してください。'
-        self.fields['carmodel'].widget.attrs['class'] = 'form-control'
-        self.fields['carmodel'].widget.attrs['placeholder'] = '車種を入力してください。'
-        self.fields['email'].widget.attrs['class'] = 'form-control'
-        self.fields['email'].widget.attrs['placeholder'] = 'メールアドレスを入力してください。'
-        self.fields['siteurl'].widget.attrs['class'] = 'form-control'
-        self.fields['siteurl'].widget.attrs['placeholder'] = 'Webサイトを入力してください。'
-        self.fields['message'].widget.attrs['class'] = 'form-control'
-        self.fields['message'].widget.attrs['placeholder'] = '備考を入力してください。'
-
         # フィールドの順序を変更
-        self.order_fields(['business_name', 'features', 'location', 'tel', 'genres', 'carmodel', 'email', 'siteurl', 'message', 'main_image'])
+        self.order_fields([
+            'business_name', 'features', 'postal_code', 'location', 
+            'tel', 'genres', 'carmodel', 'email', 'siteurl', 'message', 
+            'main_image'
+        ])
 
     def clean_siteurl(self):
         siteurl = self.cleaned_data.get('siteurl')
@@ -75,8 +109,6 @@ class RegistrationForm(forms.ModelForm):
             return f'<a href="{siteurl}" target="_blank">{siteurl}</a>'
         except ValidationError:
             return siteurl
-
-
 
     def send_email(self):
         business_name = self.cleaned_data['business_name']
@@ -103,4 +135,4 @@ class EditRegistrationForm(forms.ModelForm):
         fields = '__all__'
 
 class RegistrationSearchForm(forms.Form):
-    genres = forms.CharField(label='デザインの種類', required=False)
+    genres = forms.CharField(label='主なサービス', required=False)

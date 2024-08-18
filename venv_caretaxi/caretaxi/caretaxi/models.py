@@ -19,6 +19,7 @@ class Registration(models.Model):
 
     business_name = models.CharField(max_length=999)
     features = models.CharField(max_length=999)
+    postal_code = models.CharField('郵便番号', max_length=8)
     location = models.CharField(max_length=999)
     tel = models.CharField(max_length=16)
     carmodel = models.CharField(max_length=999)

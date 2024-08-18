@@ -9,5 +9,9 @@ footer {
 }
 
 .my-div-style {
-	margin-top: 6rem;
+    margin-top: 6rem;
+}
+
+.text-danger {
+    font-size: 12px;
 }

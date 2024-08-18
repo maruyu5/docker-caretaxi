@@ -2,11 +2,11 @@ from django.urls import path
 from . import views
 # from .views import email_form
 from .views import registration_list
-
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import EditRegistrationView
 from .views import DetailRegistrationView
+from .views import filter_by_city
 
 app_name = 'caretaxi'
 urlpatterns = [
@@ -20,6 +20,7 @@ urlpatterns = [
     path('registration_list/', registration_list, name='registration_list'),
     path('edit_registration/<int:registration_id>/', EditRegistrationView.as_view(), name='edit_registration'),
     path('detail_registration/<int:registration_id>/', DetailRegistrationView.as_view(), name='detail_registration'),
+    path('prefecture/<str:prefecture>/city/<str:city>/', filter_by_city, name='filter_by_city'),
     # path('email/', views.email_form, name='email_form'),
 ]
 

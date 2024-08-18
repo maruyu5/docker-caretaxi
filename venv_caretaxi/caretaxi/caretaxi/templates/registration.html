@@ -7,23 +7,64 @@
 {% block contents %}
 <div class="container">
     <div class="my-div-style">
-		<form method="post" enctype="multipart/form-data">
-			{% csrf_token %}
-		
-			{{ form.non_field_errors }}
-		
-			{% for field in form %}
-			<div class="mb-4 col-8">
-				<label for="{{ field.id_for_label }}" class="form-label">
-					<strong>{{ field.label_tag }}</strong>
-				</label>
-				{{ field }}
-				{{ field.errors }}
-			</div>
-			{% endfor %}
-		
-			<button class="btn btn-primary" type="submit">送信</button>
-		</form>
+        <form method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+            {% csrf_token %}
+        
+            {{ form.non_field_errors }}
+        
+            {% for field in form %}
+            <div class="mb-4 col-8">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                    <strong>{{ field.label_tag }}</strong>
+                </label>
+                {{ field }}
+                {{ field.errors }}
+            </div>
+            {% endfor %}
+
+            <button class="btn btn-primary" type="submit">送信</button>
+        </form>
     </div>
 </div>
+
+<script>
+// 郵便番号の自動補完
+document.addEventListener('DOMContentLoaded', function() {
+    const postalCodeField = document.querySelector('#id_postal_code');
+    const locationField = document.querySelector('#id_location');
+
+    postalCodeField.addEventListener('blur', function() {
+        const postalCode = postalCodeField.value.replace('-', '');
+        if (postalCode.length === 7) {
+            fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postalCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results) {
+                        const address = data.results[0].address1 + data.results[0].address2 + data.results[0].address3;
+                        locationField.value = address;
+                    } else {
+                        alert('郵便番号に該当する住所が見つかりません。');
+                    }
+                });
+        }
+    });
+});
+
+// BootStrapでバリデーション
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
 {% endblock %}

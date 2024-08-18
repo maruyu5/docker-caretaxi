@@ -1,6 +1,6 @@
 {% extends 'base1.html' %}
 
-{% block title %}介護・福祉タクシーネットワーク{% endblock %}
+{% block title %}{{ prefecture }}{{ city }}の介護・福祉タクシー | 介護・福祉タクシーネットワーク{% endblock %}
 
 {% block active_registration %}active{% endblock %}
 
@@ -8,7 +8,7 @@
 <div class="container">
     <div class="my-div-style">
 
-        <h1 class="display-5"><a href="{% url 'caretaxi:registration_list' %}">介護・福祉タクシーネットワーク</a></h1>
+        <h1 class="display-5"><a href="{% url 'caretaxi:registration_list' %}">{{ prefecture }}{{ city }}</a>の介護・福祉タクシー</h1>
 
         <div class="mt-5">
             <form method="get" action="">
@@ -58,7 +58,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for registration in registrations %}
+                    {% for registration in page_obj %}
                         <tr>
                             <td>{{ registration.business_name }}</td>
                             <td>{{ registration.features }}</td>
@@ -75,18 +75,18 @@
 
         <div class="pagination">
             <span class="step-links">
-                {% if registrations.has_previous %}
-                    <a href="?page=1{% if search_column %}&search_column={{ search_column }}{% endif %}{% if search_text %}&search_text={{ search_text }}{% endif %}">&laquo; 最初</a>
-                    <a href="?page={{ registrations.previous_page_number }}{% if search_column %}&search_column={{ search_column }}{% endif %}{% if search_text %}&search_text={{ search_text }}{% endif %}">前</a>
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; 最初</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">前</a>
                 {% endif %}
 
                 <span class="current">
-                    Page {{ registrations.number }} of {{ registrations.paginator.num_pages }}.
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
                 </span>
 
-                {% if registrations.has_next %}
-                    <a href="?page={{ registrations.next_page_number }}{% if search_column %}&search_column={{ search_column }}{% endif %}{% if search_text %}&search_text={{ search_text }}{% endif %}">次</a>
-                    <a href="?page={{ registrations.paginator.num_pages }}{% if search_column %}&search_column={{ search_column }}{% endif %}{% if search_text %}&search_text={{ search_text }}{% endif %}">最後 &raquo;</a>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">次</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">最後 &raquo;</a>
                 {% endif %}
             </span>
         </div>
