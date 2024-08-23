@@ -63,7 +63,7 @@
                             <td>{{ registration.business_name }}</td>
                             <td>{{ registration.features }}</td>
                             <td>{{ registration.location }}</td>
-                            <td>{{ registration.tel }}</td>
+                            <td><a href="tel:{{ registration.tel }}">{{ registration.tel }}</a></td>
                             <td>{{ registration.genres }}</td>
                             <td><a href="{% url 'caretaxi:detail_registration' registration.id %}"><button>詳細</button></a></td>
                             <td><a href="{% url 'caretaxi:edit_registration' registration.id %}"><button>編集</button></a></td>

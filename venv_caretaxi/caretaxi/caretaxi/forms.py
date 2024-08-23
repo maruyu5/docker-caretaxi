@@ -71,7 +71,7 @@ class RegistrationForm(forms.ModelForm):
     siteurl = forms.CharField(
         label='Webサイト',
         required=False,
-        widget=forms.URLInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     message = forms.CharField(
         label='備考',

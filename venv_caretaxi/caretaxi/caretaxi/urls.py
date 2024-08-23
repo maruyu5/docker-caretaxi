@@ -21,6 +21,7 @@ urlpatterns = [
     path('edit_registration/<int:registration_id>/', EditRegistrationView.as_view(), name='edit_registration'),
     path('detail_registration/<int:registration_id>/', DetailRegistrationView.as_view(), name='detail_registration'),
     path('prefecture/<str:prefecture>/city/<str:city>/', filter_by_city, name='filter_by_city'),
+    path('prefecture/', views.PrefectureView.as_view(), name="prefecture"),
     # path('email/', views.email_form, name='email_form'),
 ]
 

@@ -15,3 +15,48 @@ footer {
 .text-danger {
     font-size: 12px;
 }
+
+.hidden {
+    display: none;
+}
+
+.toggle-btn {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.toggle-btn:hover {
+    color: darkblue;
+}
+
+.nested-list {
+    margin-left: 20px;
+}
+
+.city-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.city-item {
+    margin: 5px 0;
+}
+
+.nested {
+    display: none;
+}
+
+.nested.active {
+    display: block;
+}
+
+.toggle::before {
+    content: "\25B6";
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.toggle-down::before {
+    transform: rotate(90deg);
+}

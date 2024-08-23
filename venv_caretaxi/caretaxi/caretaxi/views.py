@@ -362,6 +362,12 @@ def filter_by_city(request, prefecture, city):
 
 
 
+class PrefectureView(generic.TemplateView):
+    template_name = "prefecture.html"
+
+
+
+
 # def email_form(request):
 #     if request.method == 'POST':
 #         form = EmailForm(request.POST)
