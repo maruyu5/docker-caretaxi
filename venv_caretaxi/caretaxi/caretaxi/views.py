@@ -382,3 +382,41 @@ class PrefectureView(generic.TemplateView):
 #         form = EmailForm()
 
 #     return render(request, 'email_form.html', {'form': form})
+
+
+
+
+from .forms import PostalCodeForm
+import requests
+
+def lookup_address(postal_code):
+    # 外部APIを使用して住所を取得
+    response = requests.get(f"https://zipcloud.ibsnet.co.jp/api/search?zipcode={postal_code}")
+    data = response.json()
+
+    if data['results']:
+        result = data['results'][0]
+        prefecture = result['address1']  # 都道府県
+        city = result['address2']  # 市区町村
+        return prefecture, city
+    else:
+        return None, None
+
+def PostalCodeView(request):
+    form = PostalCodeForm(request.POST or None)
+    url = None
+    address_text = None
+
+    if request.method == 'POST' and form.is_valid():
+        postal_code = form.cleaned_data.get('postal_code').replace('-', '')
+
+        # 外部APIを使って住所を取得
+        prefecture, city = lookup_address(postal_code)
+
+        if prefecture and city:
+            url = f"http://localhost:7000/prefecture/{prefecture}/city/{city}/"
+            address_text = f"{prefecture}{city}"  # 都道府県と市区町村を結合して表示用のテキストを作成
+        else:
+            url = "郵便番号に該当する住所が見つかりません。"
+
+    return render(request, 'postal_code.html', {'form': form, 'url': url, 'address_text': address_text})

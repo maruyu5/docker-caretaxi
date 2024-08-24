@@ -136,3 +136,10 @@ class EditRegistrationForm(forms.ModelForm):
 
 class RegistrationSearchForm(forms.Form):
     genres = forms.CharField(label='主なサービス', required=False)
+
+class PostalCodeForm(forms.Form):
+    postal_code = forms.CharField(
+        label='郵便番号', 
+        max_length=8, 
+        widget=forms.TextInput(attrs={'placeholder': '例: 123-4567'})
+    )

@@ -1,0 +1,22 @@
+{% extends 'base1.html' %}
+
+{% block title %}郵便番号で探す | 介護・福祉タクシーネットワーク{% endblock %}
+
+{% block active_registration %}active{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <div class="my-div-style">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">検索</button>
+        </form>
+        
+        {% if url and address_text %}
+        <p><a href="{{ url }}">{{ address_text }}の介護・福祉タクシー</a></p>
+        {% endif %}
+        </div>
+</div>
+
+{% endblock %}
