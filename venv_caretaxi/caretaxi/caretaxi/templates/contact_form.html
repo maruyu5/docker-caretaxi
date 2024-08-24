@@ -21,11 +21,10 @@
         <link rel="stylesheet" type="text/css" href="{% static 'template_pattern2/css/mystyle.css' %}">
     </head>
     <body id="page-top">
-<!-- templates/email_form.html -->
-<form method="post" action="{% url 'caretaxi:email_form' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
+        <form method="post" action="{% url 'caretaxi:contact_form' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit</button>
+        </form>
     </body>
 </html>

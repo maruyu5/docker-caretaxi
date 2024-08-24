@@ -110,19 +110,6 @@ class RegistrationForm(forms.ModelForm):
         except ValidationError:
             return siteurl
 
-    def send_email(self):
-        business_name = self.cleaned_data['business_name']
-        email = self.cleaned_data['email']
-        siteurl = self.cleaned_data['siteurl']
-        message = self.cleaned_data['message']
-        subject = 'お問い合わせ {}'.format(business_name)
-        body = '送信者名: {0}\nメールアドレス: {1}\nメッセージ:\n{2}'.format(business_name, email, message)
-        from_email = os.environ.get('FROM_EMAIL')
-        to_list = [os.environ.get('FROM_EMAIL')]
-        cc_list = [email]
-        email_message = EmailMessage(subject=subject, body=body, from_email=from_email, to=to_list, cc=cc_list)
-        email_message.send()
-
 class EditRegistrationForm(forms.ModelForm):
     genres = forms.MultipleChoiceField(
         choices=RegistrationForm.GENRE_CHOICES,
@@ -143,3 +130,13 @@ class PostalCodeForm(forms.Form):
         max_length=8, 
         widget=forms.TextInput(attrs={'placeholder': '例: 123-4567'})
     )
+
+class ContactForm(forms.Form):
+    business_name = forms.CharField(label='事業者名', required=False)
+    name = forms.CharField(label='（必須）お名前', required=True)
+    onamae = forms.CharField(label='（必須）オナマエ', required=True)
+    postal_code = forms.CharField(label='郵便番号', required=False)
+    location = forms.CharField(label='所在地', required=False)
+    tel = forms.CharField(label='電話番号', required=False)
+    email = forms.EmailField(label='（必須）メールアドレス', required=True)
+    message = forms.CharField(label='（必須）お問合せ内容', widget=forms.Textarea, required=True)

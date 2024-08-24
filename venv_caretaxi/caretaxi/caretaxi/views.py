@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import EmailModel  # EmailModelはデータベースモデルとして作成しておく
+from .forms import ContactForm  # EmailFormをインポート
 from .models import Registration
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -125,9 +126,6 @@ class KajikiView(generic.TemplateView):
         context['kajiki4'] = result_divtext_str
         return context
 
-
-
-
 class TenkiView(generic.ListView):
     model = Post
     template_name = "tenki.html"
@@ -201,9 +199,6 @@ class TenkiView(generic.ListView):
 
         return context
 
-
-
-
 def TashizanFormView(request):
     template_name="tashizan_form.html"
     context = {}  # コンテキスト辞書を初期化
@@ -219,9 +214,6 @@ def TashizanFormView(request):
 
     return render(request, template_name, context)  # コンテキストをテンプレートに渡す)
 
-
-
-
 class RegistrationView(generic.FormView):
     template_name = "registration.html"
     form_class = RegistrationForm
@@ -236,9 +228,6 @@ class RegistrationView(generic.FormView):
         form.save()
 
         return super().form_valid(form)
-
-
-
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -272,7 +261,7 @@ def registration_list(request):
         else:
             registrations = registrations.filter(**{f'{search_column}__icontains': search_text})
 
-    # デザインの種類に基づいて結果をフィルタリング（新しく追加）
+    # デザインの種類に基づいて結果をフィルタリング
     if search_genres:
         registrations = registrations.filter(genres__icontains=search_genres)
 
@@ -291,11 +280,8 @@ def registration_list(request):
         'registrations': registrations,
         'search_column': search_column,
         'search_text': search_text,
-        'search_genres': search_genres,  # 追加
+        'search_genres': search_genres,
     })
-
-
-
 
 # 編集画面
 class EditRegistrationView(View):
@@ -330,9 +316,6 @@ class EditRegistrationView(View):
         messages.error(request, 'フォームの入力に誤りがあります。')  # エラーメッセージを表示するなどの処理を追加
         return render(request, self.template_name, {'form': form, 'registration': registration})
 
-
-
-
 # 詳細画面
 class DetailRegistrationView(View):
     template_name = 'detail_registration.html'
@@ -340,9 +323,6 @@ class DetailRegistrationView(View):
     def get(self, request, registration_id):
         registration = get_object_or_404(Registration, id=registration_id)
         return render(request, self.template_name, {'registration': registration})
-
-
-
 
 # 市町村別にフィルタリングする関数
 def filter_by_city(request, prefecture, city):
@@ -359,32 +339,8 @@ def filter_by_city(request, prefecture, city):
         'city': city
     })
 
-
-
-
 class PrefectureView(generic.TemplateView):
     template_name = "prefecture.html"
-
-
-
-
-# def email_form(request):
-#     if request.method == 'POST':
-#         form = EmailForm(request.POST)
-#         if form.is_valid():
-#             email_address = form.cleaned_data['email']
-            
-#             # データベースに保存
-#             EmailModel.objects.create(email=email_address)
-
-#             return redirect(request.META.get('HTTP_REFERER', 'email_form'))
-#     else:
-#         form = EmailForm()
-
-#     return render(request, 'email_form.html', {'form': form})
-
-
-
 
 from .forms import PostalCodeForm
 import requests
@@ -420,3 +376,51 @@ def PostalCodeView(request):
             url = "郵便番号に該当する住所が見つかりません。"
 
     return render(request, 'postal_code.html', {'form': form, 'url': url, 'address_text': address_text})
+
+import os
+from django.core.mail import EmailMessage
+from django.shortcuts import render, redirect
+from .forms import ContactForm
+
+def contact_form(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            send_email(form)
+            return redirect('/contact_finish/')  # URLパスを直接指定
+    else:
+        form = ContactForm()
+    return render(request, 'contact_form.html', {'form': form})
+
+
+def send_email(self):
+    business_name = self.cleaned_data['business_name']
+    name = self.cleaned_data['name']
+    onamae = self.cleaned_data['onamae']
+    postal_code = self.cleaned_data['postal_code']
+    location = self.cleaned_data['location']
+    tel = self.cleaned_data['tel']
+    email = self.cleaned_data['email']
+    message = self.cleaned_data['message']
+    
+    subject = 'お問い合わせ {}'.format(business_name)
+    body = (
+        f"事業者名: {business_name}\n"
+        f"お名前: {name}\n"
+        f"オナマエ: {onamae}\n"
+        f"郵便番号: {postal_code}\n"
+        f"所在地: {location}\n"
+        f"電話番号: {tel}\n"
+        f"メールアドレス: {email}\n"
+        f"お問い合わせ内容:\n{message}"
+    )
+    
+    from_email = os.environ.get('FROM_EMAIL')
+    to_list = [os.environ.get('FROM_EMAIL')]
+    cc_list = [email]
+    
+    email_message = EmailMessage(subject=subject, body=body, from_email=from_email, to=to_list, cc=cc_list)
+    email_message.send()
+
+def contact_finish(request):
+    return render(request, 'contact_finish.html')

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-# from .views import email_form
+from .views import contact_form, contact_finish
 from .views import registration_list
 from django.conf import settings
 from django.conf.urls.static import static
@@ -23,7 +23,8 @@ urlpatterns = [
     path('prefecture/<str:prefecture>/city/<str:city>/', filter_by_city, name='filter_by_city'),
     path('prefecture/', views.PrefectureView.as_view(), name="prefecture"),
     path('postal_code/', views.PostalCodeView, name='postal_code'),
-    # path('email/', views.email_form, name='email_form'),
+    path('contact_form/', contact_form, name='contact_form'),
+    path('contact_finish/', contact_finish, name='contact_finish'),
 ]
 
 # 開発環境でのみメディアファイルを提供する設定を追加
