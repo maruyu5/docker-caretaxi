@@ -7,10 +7,6 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-class EmailModel(models.Model):
-    email = models.EmailField()
-
-
 class Registration(models.Model):
     REUSE_CHOICES = [
         ('未', '未'),
@@ -32,3 +28,17 @@ class Registration(models.Model):
 
     def __str__(self):
         return self.location
+
+class ContactModel(models.Model):
+    business_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    name_kana = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=10)
+    location = models.CharField(max_length=255)
+    tel = models.CharField(max_length=15)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

@@ -131,12 +131,67 @@ class PostalCodeForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': '例: 123-4567'})
     )
 
-class ContactForm(forms.Form):
-    business_name = forms.CharField(label='事業者名', required=False)
-    name = forms.CharField(label='（必須）お名前', required=True)
-    onamae = forms.CharField(label='（必須）オナマエ', required=True)
-    postal_code = forms.CharField(label='郵便番号', required=False)
-    location = forms.CharField(label='所在地', required=False)
-    tel = forms.CharField(label='電話番号', required=False)
-    email = forms.EmailField(label='（必須）メールアドレス', required=True)
-    message = forms.CharField(label='（必須）お問合せ内容', widget=forms.Textarea, required=True)
+import re
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
+from .models import ContactModel
+
+class ContactForm(forms.ModelForm):
+    business_name = forms.CharField(
+        label=mark_safe('事業所名 <span class="text-danger">*必須</span>'),
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    name = forms.CharField(
+        label=mark_safe('（必須）お名前 <span class="text-danger">*</span>'),
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    name_kana = forms.CharField(
+        label=mark_safe('（必須）オナマエ <span class="text-danger">*</span>'),
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    postal_code = forms.CharField(
+        label='郵便番号',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '例: 123-4567'})
+    )
+    location = forms.CharField(
+        label='所在地',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    tel = forms.CharField(
+        label='電話番号',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        label=mark_safe('（必須）メールアドレス <span class="text-danger">*</span>'),
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    message = forms.CharField(
+        label=mark_safe('（必須）お問合せ内容 <span class="text-danger">*</span>'),
+        widget=forms.Textarea(attrs={'class': 'form-control'}),
+        required=True
+    )
+
+    class Meta:
+        model = ContactModel
+        fields = ['business_name', 'name', 'name_kana', 'postal_code', 'location', 'tel', 'email', 'message']
+
+    def clean_postal_code(self):
+        postal_code = self.cleaned_data.get('postal_code')
+        
+        # ハイフンなしの7桁の場合、自動でハイフンを挿入
+        if postal_code and len(postal_code) == 7 and postal_code.isdigit():
+            postal_code = f'{postal_code[:3]}-{postal_code[3:]}'
+        
+        # フォーマット後に正しい形式か確認
+        if postal_code and not re.match(r'^\d{3}-\d{4}$', postal_code):
+            raise ValidationError('正しい郵便番号の形式で入力してください。')
+        
+        return postal_code

@@ -5,8 +5,8 @@ from .models import Post
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .models import EmailModel  # EmailModelはデータベースモデルとして作成しておく
-from .forms import ContactForm  # EmailFormをインポート
+from .models import ContactModel
+from .forms import ContactForm
 from .models import Registration
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -386,17 +386,17 @@ def contact_form(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
+            form.save()  # データベースに保存
             send_email(form)
             return redirect('/contact_finish/')  # URLパスを直接指定
     else:
         form = ContactForm()
     return render(request, 'contact_form.html', {'form': form})
 
-
 def send_email(self):
     business_name = self.cleaned_data['business_name']
     name = self.cleaned_data['name']
-    onamae = self.cleaned_data['onamae']
+    name_kana = self.cleaned_data['name_kana']
     postal_code = self.cleaned_data['postal_code']
     location = self.cleaned_data['location']
     tel = self.cleaned_data['tel']
@@ -407,14 +407,14 @@ def send_email(self):
     body = (
         f"事業者名: {business_name}\n"
         f"お名前: {name}\n"
-        f"オナマエ: {onamae}\n"
+        f"オナマエ: {name_kana}\n"
         f"郵便番号: {postal_code}\n"
         f"所在地: {location}\n"
         f"電話番号: {tel}\n"
         f"メールアドレス: {email}\n"
         f"お問い合わせ内容:\n{message}"
     )
-    
+
     from_email = os.environ.get('FROM_EMAIL')
     to_list = [os.environ.get('FROM_EMAIL')]
     cc_list = [email]
