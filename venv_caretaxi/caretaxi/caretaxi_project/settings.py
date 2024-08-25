@@ -163,13 +163,14 @@ LOGGING = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# メールをGmailで送信する時はコメントアウトを外す
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'fu7master@gmail.com'
-# EMAIL_HOST_PASSWORD = 'sa1212ab'
+# メールをGmailで送信する設定
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fu7master@gmail.com'
+EMAIL_HOST_PASSWORD = 'hzqaimcmpbxsdfjl'
+DEFAULT_FROM_EMAIL = 'fu7master@gmail.com'
 
 MESSAGE_TAGS = {
     messages.ERROR: 'alert alert-danger',

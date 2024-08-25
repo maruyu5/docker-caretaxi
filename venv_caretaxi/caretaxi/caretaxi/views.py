@@ -377,20 +377,40 @@ def PostalCodeView(request):
 
     return render(request, 'postal_code.html', {'form': form, 'url': url, 'address_text': address_text})
 
-import os
-from django.core.mail import EmailMessage
+from django.core.mail import send_mail
+from django.conf import settings
 from django.shortcuts import render, redirect
 from .forms import ContactForm
+from .models import ContactModel
 
 def contact_form(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            form.save()  # データベースに保存
-            send_email(form)
-            return redirect('/contact_finish/')  # URLパスを直接指定
+            # データベースに保存
+            contact = form.save()
+
+            # メール送信
+            subject = f"お問い合わせ: {contact.business_name}"
+            message = (
+                f"事業所名: {contact.business_name}\n"
+                f"お名前: {contact.name}\n"
+                f"オナマエ: {contact.name_kana}\n"
+                f"郵便番号: {contact.postal_code}\n"
+                f"所在地: {contact.location}\n"
+                f"電話番号: {contact.tel}\n"
+                f"メールアドレス: {contact.email}\n"
+                f"お問い合わせ内容:\n{contact.message}"
+            )
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [settings.DEFAULT_FROM_EMAIL]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+            return redirect('/contact_finish/')
     else:
         form = ContactForm()
+    
     return render(request, 'contact_form.html', {'form': form})
 
 def send_email(self):
@@ -403,7 +423,7 @@ def send_email(self):
     email = self.cleaned_data['email']
     message = self.cleaned_data['message']
     
-    subject = 'お問い合わせ {}'.format(business_name)
+    subject = f'お問い合わせ {business_name}'
     body = (
         f"事業者名: {business_name}\n"
         f"お名前: {name}\n"
@@ -415,10 +435,10 @@ def send_email(self):
         f"お問い合わせ内容:\n{message}"
     )
 
-    from_email = os.environ.get('FROM_EMAIL')
-    to_list = [os.environ.get('FROM_EMAIL')]
+    from_email = settings.EMAIL_HOST_USER  # 正しい送信者アドレスを指定
+    to_list = [settings.EMAIL_HOST_USER]
     cc_list = [email]
-    
+
     email_message = EmailMessage(subject=subject, body=body, from_email=from_email, to=to_list, cc=cc_list)
     email_message.send()
 
