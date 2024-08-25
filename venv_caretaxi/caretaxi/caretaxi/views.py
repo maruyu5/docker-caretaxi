@@ -29,9 +29,6 @@ def index(request):
 
     return render(request, 'index.html', {'form': form})
 
-
-
-
 class DiaryView(generic.TemplateView):
     template_name = "diary.html"
 
@@ -382,6 +379,8 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from .forms import ContactForm
 from .models import ContactModel
+from django.core.mail import EmailMessage
+
 
 def contact_form(request):
     if request.method == 'POST':
@@ -390,57 +389,44 @@ def contact_form(request):
             # データベースに保存
             contact = form.save()
 
-            # メール送信
-            subject = f"お問い合わせ: {contact.business_name}"
+            # メール送信内容を設定
+            subject = f"【自動返信】お問い合わせありがとうございます"
             message = (
-                f"事業所名: {contact.business_name}\n"
-                f"お名前: {contact.name}\n"
-                f"オナマエ: {contact.name_kana}\n"
-                f"郵便番号: {contact.postal_code}\n"
-                f"所在地: {contact.location}\n"
-                f"電話番号: {contact.tel}\n"
-                f"メールアドレス: {contact.email}\n"
-                f"お問い合わせ内容:\n{contact.message}"
+                f"お問い合わせありがとうございます。下記内容で送信されました。\n\n"
+                f"【事業者名】\n"
+                f"{contact.business_name}\n\n"
+                f"【お名前】\n"
+                f"{contact.name}\n\n"
+                f"【お名前（フリガナ）】\n"
+                f"{contact.name_kana}\n\n"
+                f"【郵便番号】\n"
+                f"{contact.postal_code}\n\n"
+                f"【所在地】\n"
+                f"{contact.location}\n\n"
+                f"【電話番号】\n"
+                f"{contact.tel}\n\n"
+                f"【メールアドレス】\n"
+                f"{contact.email}\n\n"
+                f"【お問い合わせ内容】\n"
+                f"{contact.message}\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                f"【介護・福祉タクシーネットワーク】\n"
+                f"https:/\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             )
             from_email = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [settings.DEFAULT_FROM_EMAIL]
+            to_list = [settings.DEFAULT_FROM_EMAIL]
+            cc_list = [contact.email]
 
-            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            # メールを送信
+            email = EmailMessage(subject, message, from_email, to=to_list, cc=cc_list)
+            email.send(fail_silently=False)
 
             return redirect('/contact_finish/')
     else:
         form = ContactForm()
     
     return render(request, 'contact_form.html', {'form': form})
-
-def send_email(self):
-    business_name = self.cleaned_data['business_name']
-    name = self.cleaned_data['name']
-    name_kana = self.cleaned_data['name_kana']
-    postal_code = self.cleaned_data['postal_code']
-    location = self.cleaned_data['location']
-    tel = self.cleaned_data['tel']
-    email = self.cleaned_data['email']
-    message = self.cleaned_data['message']
-    
-    subject = f'お問い合わせ {business_name}'
-    body = (
-        f"事業者名: {business_name}\n"
-        f"お名前: {name}\n"
-        f"オナマエ: {name_kana}\n"
-        f"郵便番号: {postal_code}\n"
-        f"所在地: {location}\n"
-        f"電話番号: {tel}\n"
-        f"メールアドレス: {email}\n"
-        f"お問い合わせ内容:\n{message}"
-    )
-
-    from_email = settings.EMAIL_HOST_USER  # 正しい送信者アドレスを指定
-    to_list = [settings.EMAIL_HOST_USER]
-    cc_list = [email]
-
-    email_message = EmailMessage(subject=subject, body=body, from_email=from_email, to=to_list, cc=cc_list)
-    email_message.send()
 
 def contact_finish(request):
     return render(request, 'contact_finish.html')

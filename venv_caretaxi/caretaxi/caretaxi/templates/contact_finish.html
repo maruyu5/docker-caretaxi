@@ -1,13 +1,14 @@
-<!-- success.html -->
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>送信完了</title>
-</head>
-<body>
-    <h1>送信が完了しました</h1>
-    <p>お問い合わせありがとうございました。</p>
-</body>
-</html>
+{% extends 'base1.html' %}
+
+{% block title %}お問い合わせ完了 | 介護・福祉タクシーネットワーク{% endblock %}
+
+{% block active_registration %}active{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <div class="my-div-style">
+        <h1>送信が完了しました</h1>
+        <p>お問い合わせありがとうございました。</p>
+    </div>
+</div>
+{% endblock %}

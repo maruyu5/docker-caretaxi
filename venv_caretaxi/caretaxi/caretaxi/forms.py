@@ -139,17 +139,17 @@ from .models import ContactModel
 
 class ContactForm(forms.ModelForm):
     business_name = forms.CharField(
-        label=mark_safe('事業所名 <span class="text-danger">*必須</span>'),
+        label='事業所名',
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     name = forms.CharField(
-        label=mark_safe('（必須）お名前 <span class="text-danger">*</span>'),
+        label=mark_safe('お名前 <span class="text-danger">*必須</span>'),
         required=True,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     name_kana = forms.CharField(
-        label=mark_safe('（必須）オナマエ <span class="text-danger">*</span>'),
+        label=mark_safe('お名前（フリガナ） <span class="text-danger">*必須</span>'),
         required=True,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
@@ -169,12 +169,12 @@ class ContactForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     email = forms.EmailField(
-        label=mark_safe('（必須）メールアドレス <span class="text-danger">*</span>'),
+        label=mark_safe('メールアドレス <span class="text-danger">*必須</span>'),
         required=True,
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
     message = forms.CharField(
-        label=mark_safe('（必須）お問合せ内容 <span class="text-danger">*</span>'),
+        label=mark_safe('お問い合わせ内容 <span class="text-danger">*必須</span>'),
         widget=forms.Textarea(attrs={'class': 'form-control'}),
         required=True
     )
