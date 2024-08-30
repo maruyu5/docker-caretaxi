@@ -10,13 +10,13 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">検索</button>
+            <button class="btn btn-primary" type="submit">検索</button>
         </form>
         
         {% if url and address_text %}
         <p><a href="{{ url }}">{{ address_text }}の介護・福祉タクシー</a></p>
         {% endif %}
-        </div>
+    </div>
 </div>
 
 {% endblock %}

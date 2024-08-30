@@ -25,6 +25,8 @@ urlpatterns = [
     path('postal_code/', views.PostalCodeView, name='postal_code'),
     path('contact_form/', contact_form, name='contact_form'),
     path('contact_finish/', contact_finish, name='contact_finish'),
+    path('wishlist/', views.view_wishlist, name='view_wishlist'),
+    path('wishlist/add/', views.add_to_wishlist, name='add_to_wishlist'),
 ]
 
 # 開発環境でのみメディアファイルを提供する設定を追加

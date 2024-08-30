@@ -1,0 +1,20 @@
+{% extends 'base1.html' %}
+
+{% block title %}検討リスト | 介護・福祉タクシーネットワーク{% endblock %}
+
+{% block active_registration %}active{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <div class="my-div-style">
+        <ul>
+            {% for item in registrations %}
+                <li>
+                    <a href="{{ item.url }}">{{ item.business_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

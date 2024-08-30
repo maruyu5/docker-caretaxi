@@ -28,7 +28,13 @@
         <p><strong>メールアドレス:</strong> {{ registration.email }}</p>
         <p><strong>Webサイト:</strong> {{ registration.siteurl|safe }}</p>
         <p><strong>備考:</strong> {{ registration.message }}</p>
-
+        
+        {% if request.get_full_path in request.session.wishlist %}
+            <a href="{% url 'caretaxi:add_to_wishlist' %}?url={{ request.get_full_path }}">検討リストから削除</a>
+        {% else %}
+            <a href="{% url 'caretaxi:add_to_wishlist' %}?url={{ request.get_full_path }}">検討リストに追加</a>
+        {% endif %}
+        
         <p><a href="{% url 'caretaxi:registration_list' %}">一覧に戻る</a></p>
     </div>
 

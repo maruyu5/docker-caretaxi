@@ -430,3 +430,41 @@ def contact_form(request):
 
 def contact_finish(request):
     return render(request, 'contact_finish.html')
+
+def add_to_wishlist(request):
+    url = request.GET.get('url')
+    if url:
+        wishlist = request.session.get('wishlist', [])
+        if url in wishlist:
+            # 既に検討リストにある場合は削除
+            wishlist.remove(url)
+            messages.success(request, "検討リストから削除しました")
+        else:
+            # 検討リストに追加
+            wishlist.append(url)
+            messages.success(request, "検討リストに追加しました")
+        
+        request.session['wishlist'] = wishlist
+
+    # 元のページのURLにリダイレクト
+    referer_url = request.META.get('HTTP_REFERER', '/')
+    return redirect(referer_url)
+
+from django.shortcuts import render, get_object_or_404
+from .models import Registration
+
+def view_wishlist(request):
+    urls = request.session.get('wishlist', [])
+    
+    # URLに対応するRegistrationオブジェクトを取得
+    registrations = []
+    for url in urls:
+        # URLからIDを抽出する (例えば、URLが `/detail_registration/5/` である場合)
+        registration_id = url.split('/')[-2]  # 例: "5" を取得
+        registration = get_object_or_404(Registration, id=registration_id)
+        registrations.append({'url': url, 'business_name': registration.business_name})
+    
+    context = {
+        'registrations': registrations,
+    }
+    return render(request, 'wishlist.html', context)

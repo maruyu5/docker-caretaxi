@@ -42,3 +42,19 @@ class ContactModel(models.Model):
 
     def __str__(self):
         return self.name
+
+from django.db import models
+
+class Wishlist(models.Model):
+    session_key = models.CharField(max_length=40)
+    urls = models.TextField()  # URLをカンマ区切りで保存
+
+    def add_url(self, url):
+        url_list = self.urls.split(',') if self.urls else []
+        if url not in url_list:
+            url_list.append(url)
+            self.urls = ','.join(url_list)
+            self.save()
+
+    def get_urls(self):
+        return self.urls.split(',') if self.urls else []
