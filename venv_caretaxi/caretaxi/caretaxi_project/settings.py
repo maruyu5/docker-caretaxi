@@ -28,8 +28,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'caretaxi.apps.CaretaxiConfig',
+    'import_export',
 ]
 
 MIDDLEWARE = [

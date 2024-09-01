@@ -10,6 +10,8 @@ RUN pip install -r requirements.txt
 
 RUN pip install --upgrade pip
 
+RUN pip install django-import-export
+
 ADD . /usr/src/venv_caretaxi
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:7000"]
