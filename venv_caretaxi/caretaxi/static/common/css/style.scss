@@ -1,0 +1,253 @@
+/* リセットCSSここから */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    font-family: sans-serif;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Noto Sans', sans-serif;
+    color: #333;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    margin: 0;
+}
+
+ul, ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+button, input, select, textarea {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font: inherit;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+/* リセットCSSここまで */
+
+$media768: 768px;
+$media480: 480px;
+
+@mixin media768 {
+    @media screen and (max-width: $media768) {
+        @content;
+    }
+}
+
+@mixin media480 {
+    @media screen and (max-width: $media480) {
+        @content;
+    }
+}
+
+.navbar {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    padding: 1.6rem;
+    background: rgb(43, 188, 166);
+}
+
+.site-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 31px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #ffffff;
+    display: inline-block;
+    text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+
+    & a {
+        color: inherit;
+    }
+
+    &:hover {
+        text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.9);
+        transform: translateY(-2px);
+    }
+
+    & span {
+        font-size: 15px !important;
+
+        @include media480 {
+            font-size: 11px !important;
+        }
+    }
+}
+
+/* bootstrapを上書きここから */
+.nav-link_white {
+    color: white !important;
+}
+
+.bgc_blue {
+    background: #1e73be;
+    border: #0066bf 5px solid;
+    margin-right: 3px;
+}
+
+.px-5 {
+    @include media480 {
+        padding: 0 !important;
+    }
+}
+/* bootstrapを上書きここまで */
+
+.table_css {
+    & thead {
+        @include media768 {
+            display: none;
+        }
+    }
+
+    & tr {
+        @include media768 {
+            display: block;
+            margin: 40px 0;
+        }
+    }
+
+    & th {
+        color: #fff;
+        background: rgb(43, 188, 166);
+        white-space: nowrap;
+        font-size: 15px;
+        background-clip: padding-box;
+    }
+
+    & th, td {
+        border: 1px solid #e5f0fb;
+        border-width: 0px 1px 0px 1px;
+
+        @include media768 {
+            display: block;
+        }
+    }
+
+    & td {
+        @include media768 {
+            position: relative;
+            text-align: left;
+            padding-top: 35px;
+        }
+
+        &::before {
+            @include media768 {
+                content: attr(data-label); /* data-label 属性の値を表示 */
+                position: absolute;
+                left: 10px;
+                top: 10px;
+                padding: 0 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #ffffff;
+                background: rgb(43, 188, 166);
+                text-align: center;
+            }
+        }
+    }
+
+    & > tbody > tr:nth-of-type(2n+1) > * {
+        background: rgb(229, 243, 240);
+    }
+}
+
+.container_mt {
+    margin-top: 6rem;
+}
+
+footer {
+    margin-top: auto;
+    background: rgb(43, 188, 166);
+}
+
+/* フォーム関係ここから */
+.text-danger {
+    font-size: 12px;
+}
+
+.hidden {
+    display: none;
+}
+
+.toggle-btn {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+
+    &:hover {
+        color: darkblue;
+    }
+}
+
+.nested-list {
+    margin-left: 20px;
+}
+
+.city-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.city-item {
+    margin: 5px 0;
+}
+
+.nested {
+    display: none;
+}
+
+.nested.active {
+    display: block;
+}
+
+.toggle::before {
+    content: "\25B6";
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.toggle-down::before {
+    transform: rotate(90deg);
+}
+/* フォーム関係ここまで */
